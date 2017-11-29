@@ -35,6 +35,7 @@ executable cronwrap-exe
                      , either-unwrap
                      , hostname
                      , ini
+                     , network-protocol-xmpp
                      , optparse-applicative
                      , text
   default-language:    Haskell2010

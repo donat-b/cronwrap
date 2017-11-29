@@ -24,16 +24,12 @@ import Network.Protocol.XMPP
 type a :?  (b::Symbol) = a
 
 runJob :: T.Text :? "Server hostname"
-       -> T.Text :? "JID"
+       -> JID    :? "JID"
        -> T.Text :? "Password"
        -> T.Text :? "Recipient"
        -> T.Text :? "Hostname"
        -> T.Text :? "Command" -> IO ()
-runJob hostname user password messageTo localHostName command = do
-  jid <-
-    case parseJID user of
-      Just x -> return x
-      Nothing -> error $ "Invalid JID: " ++ show user
+runJob hostname jid password messageTo localHostName command = do
   username <-
     case strNode `fmap` jidNode jid of
       Just x -> return x

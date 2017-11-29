@@ -6,6 +6,7 @@ import Data.Either.Unwrap
 import Data.Ini
 import Data.Semigroup ((<>))
 import Network.HostName (getHostName)
+import Network.Protocol.XMPP
 import Options.Applicative
 import qualified Data.Text as T
 
@@ -36,7 +37,12 @@ cronwrap (Cronwrap c) = do
       localHost = T.pack h
       command = T.pack c
 
-  runJob host user pass messageTo localHost command
+  jid <-
+    case parseJID user of
+      Just x -> return x
+      Nothing -> error $ "Invalid JID: " ++ show user
+
+  runJob host jid pass messageTo localHost command
 
 main :: IO ()
 main = cronwrap =<< execParser opts
