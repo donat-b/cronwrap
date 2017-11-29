@@ -74,7 +74,7 @@ runCommand :: T.Text :? "Command"
 runCommand command localHostName = do
   let chunk = 15000
   let nL = "\n"
-  let separator = nL <> T.concat (replicate 60 "-") <> nL
+  let separator = nL <> T.concat (replicate 20 "-") <> nL
   dateBegin <- date
   (exitCode, stdout, stderr) <- procStrictWithErr command [] empty
   dateEnd <- date
