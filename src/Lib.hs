@@ -26,7 +26,7 @@ type a :?  (b::Symbol) = a
 runJob :: T.Text :? "Server hostname"
        -> JID    :? "JID"
        -> T.Text :? "Password"
-       -> T.Text :? "Recipient"
+       -> [JID]  :? "Recipient"
        -> T.Text :? "Hostname"
        -> T.Text :? "Command" -> IO ()
 runJob hostname jid password messageTo localHostName command = do
@@ -56,7 +56,7 @@ runJob hostname jid password messageTo localHostName command = do
       putStanza (status statusText)
       (exitCode, results) <- liftIO $ takeMVar result
       case exitCode of
-        ExitFailure n -> mapM_ (putStanza . sendMsg (parseJID messageTo)) results
+        ExitFailure n -> mapM_ (\(to,text) -> putStanza $ sendMsg (Just to) text) $ zip messageTo results
         ExitSuccess -> liftIO $
           print $ "`" <> command <> "` completed successfuly"
       -- TODO: There seems to be a problem with IO flushing in

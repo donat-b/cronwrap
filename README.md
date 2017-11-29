@@ -16,13 +16,12 @@ to the address set in configuration file.
 `/etc/cronwrap.conf`
 ``` ini
 [xmpp]
-user: name@example.com
+user: cron@example.com
 pass: password123
 host: example.com
-messageTo: admin@example.com
+recipients: admin@example.com,admin2@example.com
 ```
 
 ## TODO
-- [ ] Multiple recipients
 - [ ] Support for backup account(s)
 - [ ] Limiting command execution time

@@ -33,7 +33,7 @@ cronwrap (Cronwrap c) = do
   let host = readText "xmpp" "host"
       user = readText "xmpp" "user"
       pass = readText "xmpp" "pass"
-      messageTo = readText "xmpp" "messageTo"
+      rcpt = readText "xmpp" "recipients"
       localHost = T.pack h
       command = T.pack c
 
@@ -42,7 +42,16 @@ cronwrap (Cronwrap c) = do
       Just x -> return x
       Nothing -> error $ "Invalid JID: " ++ show user
 
-  runJob host jid pass messageTo localHost command
+  recipients <-
+    case sequence $ parseJIDs rcpt of
+      Just x -> return x
+      Nothing -> error "Invalid recipients JID(S)."
+
+  runJob host jid pass recipients localHost command
+
+parseJIDs :: T.Text -> [Maybe JID]
+parseJIDs s = do
+  map parseJID (T.splitOn "," s)
 
 main :: IO ()
 main = cronwrap =<< execParser opts
