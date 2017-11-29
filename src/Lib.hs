@@ -68,7 +68,9 @@ runJob hostname jid password messageTo localHostName command = do
   putMVar result =<< runCommand command localHostName
   takeMVar notified
 
-runCommand :: T.Text :? "Command" -> T.Text -> IO (ExitCode, [T.Text] :? "Report")
+runCommand :: T.Text :? "Command"
+           -> T.Text :? "Hostname"
+           -> IO (ExitCode, [T.Text] :? "Report")
 runCommand command localHostName = do
   let chunk = 15000
   let nL = "\n"
