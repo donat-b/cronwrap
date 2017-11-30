@@ -7,6 +7,7 @@ module Lib
   , runCommand
   ) where
 
+import GHC.Conc
 import GHC.TypeLits
 
 import Control.Concurrent
@@ -48,21 +49,30 @@ runJob hostname jid password messageTo localHostName command = do
   liftIO $ flip forkFinally (\_ -> putMVar
     notified ()) $
     void $ runClient server jid username password $ do
+      t <- liftIO myThreadId
+      liftIO $ labelThread t "runClient"
       boundJID <- bindJID jid
       -- Send a "ping" every 60 seconds
       getSession >>= liftIO . forkIO . sendPings 60
       liftIO $ putStrLn $ "Server bound our session to: " ++ show boundJID
       -- Populate presence with relevant info
       putStanza (status statusText)
+      liftIO $ putStrLn $ "Sent presence: " ++ show statusText
       (exitCode, results) <- liftIO $ takeMVar result
       let msgChunks to = map (simpleMsg (Just to)) results
       case exitCode of
         ExitFailure n -> mapM_ (putStanzaList . msgChunks) messageTo
         ExitSuccess -> liftIO $
           print $ "`" <> command <> "` completed successfuly"
-      -- TODO: There seems to be a problem with IO flushing in
-      -- network-protocol-xmpp, so I had to make an ugly hack for now
-      liftIO . threadDelay . fromInteger $ 1000000 * 15
+      let exitStatus = localHostName
+            <> ": `"
+            <> command
+            <> "` exited with "
+            <> (T.pack $ show exitCode)
+      putStanza (status exitStatus)
+      liftIO $ print exitStatus
+      stanza <- getStanza
+      liftIO $ putStr "\n" >> print stanza >> putStrLn "\n"
 
   -- runCommand is executed in a separate thread so it doesn't crash with xmpp thread in case of
   -- connectivity issues or other protocol errors
