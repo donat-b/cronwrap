@@ -55,8 +55,9 @@ runJob hostname jid password messageTo localHostName command = do
       -- Populate presence with relevant info
       putStanza (status statusText)
       (exitCode, results) <- liftIO $ takeMVar result
+      let msgChunks to = map (simpleMsg (Just to)) results
       case exitCode of
-        ExitFailure n -> mapM_ (\(to,text) -> putStanza $ sendMsg (Just to) text) $ zip messageTo results
+        ExitFailure n -> mapM_ (putStanzaList . msgChunks) messageTo
         ExitSuccess -> liftIO $
           print $ "`" <> command <> "` completed successfuly"
       -- TODO: There seems to be a problem with IO flushing in
@@ -105,8 +106,11 @@ runCommand command localHostName = do
         ]
   return (exitCode, results)
 
-sendMsg :: Maybe JID -> T.Text -> Message
-sendMsg messageTo content =
+putStanzaList :: Stanza a => [a] -> XMPP ()
+putStanzaList x = mapM_ putStanza x
+
+simpleMsg :: Maybe JID -> T.Text -> Message
+simpleMsg messageTo content =
   Message
   { messageType = MessageNormal
   , messageTo = messageTo
