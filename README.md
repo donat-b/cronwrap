@@ -10,7 +10,10 @@ output.
 
 ## Requirements
 
+- libgnutls
 - libgsasl
+- libidn
+- libxml2
 
 
 ## Usage
@@ -32,6 +35,7 @@ recipients: admin@example.com,admin2@example.com
 ## Motivation
 
 Sometimes you want to be sure that your cron jobs executed successfully.
+
 However, cron reporting is sub optimal on many levels:
 
 - Reports successful runs by default
