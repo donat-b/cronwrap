@@ -34,13 +34,16 @@ resolver: lts-9.2
 # will not be run. This is useful for tweaking upstream packages.
 packages:
 - .
+- location:
+    git: git@github.com:donat-b/haskell-xmpp.git
+    commit: ad816dc915513915f3e956e4864c8904b10acc11
+  extra-dep: true
 
 extra-deps:
   - gnuidn-0.2.2
   - gnutls-0.2
   - gsasl-0.3.6
   - network-2.6.3.2
-  - network-protocol-xmpp-0.4.8
   - text-1.2.2.2
   - xml-types-0.3.6
 
