@@ -14,7 +14,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  ghc-options: -O2
+  ghc-options: -O2 -Wall
   hs-source-dirs:     src
   exposed-modules:    Lib
   build-depends:      base >= 4.7 && < 5
