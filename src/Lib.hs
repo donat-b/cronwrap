@@ -30,7 +30,7 @@ runJob :: T.Text :? "Server hostname"
        -> [JID]  :? "Recipient"
        -> T.Text :? "Hostname"
        -> T.Text :? "Command" -> IO ()
-runJob hostname jid password messageTo localHostName command = do
+runJob hostname jid password recipients localHostName command = do
   username <-
     case strNode `fmap` jidNode jid of
       Just x -> return x
@@ -61,7 +61,7 @@ runJob hostname jid password messageTo localHostName command = do
       (exitCode, results) <- liftIO $ takeMVar result
       let msgChunks to = map (simpleMsg (Just to)) results
       case exitCode of
-        ExitFailure n -> mapM_ (putStanzaList . msgChunks) messageTo
+        ExitFailure n -> mapM_ (putStanzaList . msgChunks) recipients
         ExitSuccess -> liftIO $
           print $ "`" <> command <> "` completed successfuly"
       let exitStatus = localHostName
@@ -83,13 +83,13 @@ runCommand :: T.Text :? "Command"
            -> T.Text :? "Hostname"
            -> IO (ExitCode, [T.Text] :? "Report")
 runCommand command localHostName = do
-  let chunk = 15000
+  let chunkSize = 15000
   let nL = "\n"
   let separator = nL <> T.concat (replicate 20 "-") <> nL
   dateBegin <- date
   (exitCode, stdout, stderr) <- procStrictWithErr command [] empty
   dateEnd <- date
-  let results = map T.pack $ chunksOf chunk $ T.unpack $ T.concat
+  let results = map T.pack $ chunksOf chunkSize $ T.unpack $ T.concat
         [ "Hosname:\n\t"
         , localHostName
         , nL
@@ -120,10 +120,10 @@ putStanzaList :: Stanza a => [a] -> XMPP ()
 putStanzaList x = mapM_ putStanza x
 
 simpleMsg :: Maybe JID -> T.Text -> Message
-simpleMsg messageTo content =
+simpleMsg recipients content =
   Message
   { messageType = MessageNormal
-  , messageTo = messageTo
+  , messageTo = recipients
   , messageFrom = Nothing
   , messageID = Nothing
   , messageLang = Nothing
