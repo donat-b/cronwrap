@@ -113,6 +113,7 @@ runCommand command localHostName = do
         , "Standart output:"
         , separator
         , stdout
+        , "\n----END----"
         ]
   return (exitCode, results)
 
