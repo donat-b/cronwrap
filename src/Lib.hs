@@ -15,7 +15,7 @@ import Control.Monad
 import Control.Monad.IO.Class
 import qualified Data.Text as T
 import Data.List.Split
-import Turtle ((<>), date, empty, procStrictWithErr, ExitCode(..))
+import Turtle ((<>), date, empty, shellStrictWithErr, ExitCode(..))
 
 -- XMPP imports
 import Data.XML.Types
@@ -87,7 +87,7 @@ runCommand command localHostName = do
   let nL = "\n"
   let separator = nL <> T.concat (replicate 20 "-") <> nL
   dateBegin <- date
-  (exitCode, stdout, stderr) <- procStrictWithErr command [] empty
+  (exitCode, stdout, stderr) <- runShell command
   dateEnd <- date
   let results = map T.pack $ chunksOf chunkSize $ T.unpack $ T.concat
         [ "Hosname:\n\t"
@@ -116,6 +116,9 @@ runCommand command localHostName = do
         , "\n----END----"
         ]
   return (exitCode, results)
+
+runShell :: T.Text -> IO (ExitCode, T.Text, T.Text)
+runShell x' = shellStrictWithErr x' empty
 
 putStanzaList :: Stanza a => [a] -> XMPP ()
 putStanzaList x = mapM_ putStanza x

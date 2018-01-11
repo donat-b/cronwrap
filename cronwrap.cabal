@@ -1,5 +1,5 @@
 name:                cronwrap
-version:             0.2.0
+version:             0.3.0
 synopsis:            Cron job notifier over XMPP.
 description:         Cron job notifier over XMPP.
 homepage:            https://github.com/donat-b/cronwrap#readme
