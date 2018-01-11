@@ -36,7 +36,7 @@ recipients: admin@example.com,admin2@example.com
 
 Sometimes you want to be sure that your cron jobs executed successfully.
 
-However, cron reporting is sub optimal on many levels:
+However, cron reporting is suboptimal on many levels:
 
 - Reports successful runs by default
 - SMTP is unreliable (false positives in spam filters, random bounces, etc)
